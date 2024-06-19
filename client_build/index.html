@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Catton</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body class="dark">
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas"></canvas>
+    </div>
+	<img id="fullscreen-image" src="background.webp" alt="Fullscreen Image">
+    <div id="loading-cover" style="display:none;">
+      <div id="unity-loading-bar">
+        <div id="unity-logo"><img src="logo.webp"></div>
+        <div id="unity-progress-bar-empty" style="display: none;">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+        <div class="spinner"></div>
+      </div>
+    </div>
+	<div id="unity-fullscreen-button" style="display: none;"></div>
+    <script>
+		window.Telegram.WebApp.isExpanded = true;
+		window.Telegram.WebApp.expand();
+		window.Telegram.WebApp.enableClosingConfirmation();
+		
+      const hideFullScreenButton = "true";
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/catton-client-build-production.loader.js";
+      const config = {
+        dataUrl: buildUrl + "/catton-client-build-production.data.unityweb",
+        frameworkUrl: buildUrl + "/catton-client-build-production.framework.js.unityweb",
+        codeUrl: buildUrl + "/catton-client-build-production.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Catton",
+        productName: "Catton",
+        productVersion: "1.1.358",
+      };
+
+      const container = document.querySelector("#unity-container");
+      const canvas = document.querySelector("#unity-canvas");
+      const loadingCover = document.querySelector("#loading-cover");
+      const progressBarEmpty = document.querySelector("#unity-progress-bar-empty");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
+      const fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      const spinner = document.querySelector('.spinner');
+	  const unityLogo = document.querySelector("#unity-logo");
+
+      const canFullscreen = (function() {
+        for (const key of [
+            'exitFullscreen',
+            'webkitExitFullscreen',
+            'webkitCancelFullScreen',
+            'mozCancelFullScreen',
+            'msExitFullscreen',
+          ]) {
+          if (key in document) {
+            return true;
+          }
+        }
+        return false;
+      }());
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        container.className = "unity-mobile";
+        config.devicePixelRatio = 1;
+      }
+      loadingCover.style.display = "";
+
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          spinner.style.display = "none";
+          progressBarEmpty.style.display = "";
+          progressBarFull.style.width = `${100 * progress}%`;
+        }).then((unityInstance) => {
+          unityLogo.style.display = "none";
+          progressBarEmpty.style.display = "none";
+          if (canFullscreen) {
+            if (!hideFullScreenButton) {
+              fullscreenButton.style.display = "";
+            }
+            fullscreenButton.onclick = () => {
+              unityInstance.SetFullscreen(1);
+            };
+          }
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+	<script type="module">
+	  // Import the functions you need from the SDKs you need
+	  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+	  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+	  // TODO: Add SDKs for Firebase products that you want to use
+	  // https://firebase.google.com/docs/web/setup#available-libraries
+
+	  // Your web app's Firebase configuration
+	  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+	  const firebaseConfig = {
+		apiKey: "AIzaSyAly1_BcoXSaZgQlFUyF2Nly-z_k_bELsY",
+		authDomain: "catton-419117.firebaseapp.com",
+		projectId: "catton-419117",
+		storageBucket: "catton-419117.appspot.com",
+		messagingSenderId: "855641999276",
+		appId: "1:855641999276:web:56e4bef34d9e05931d9c09",
+		measurementId: "G-08M8MP9SDH"
+	  };
+
+	  // Initialize Firebase
+	  const app = initializeApp(firebaseConfig);
+	  const analytics = getAnalytics(app);
+	  
+	</script>
+  </body>
+</html>
